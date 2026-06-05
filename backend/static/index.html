@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Voice Bot</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <div class="bg-grid"></div>
+
+  <main class="app">
+
+    <!-- ── Header ── -->
+    <header class="header">
+      <div class="logo">VOICEBOT</div>
+      <div class="status-pill" id="statusPill">
+        <span class="status-dot" id="statusDot"></span>
+        <span id="statusText">disconnected</span>
+      </div>
+    </header>
+
+    <!-- ── Role selector ── -->
+    <section class="role-section" id="roleSection">
+      <p class="section-label">SELECT A ROLE</p>
+      <div class="role-grid" id="roleGrid">
+        <!-- populated by JS -->
+      </div>
+    </section>
+
+    <!-- ── Visualiser + mic button ── -->
+    <section class="viz-section">
+      <div class="orb-wrap">
+        <div class="orb" id="orb">
+          <div class="orb-ring r1"></div>
+          <div class="orb-ring r2"></div>
+          <div class="orb-ring r3"></div>
+          <div class="orb-core"></div>
+        </div>
+      </div>
+      <button class="mic-btn" id="micBtn" disabled>
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
+        <span id="micLabel">Start session</span>
+      </button>
+    </section>
+
+    <!-- ── Transcript ── -->
+    <section class="transcript-section">
+      <div class="transcript-header">
+        <span class="section-label">TRANSCRIPT</span>
+        <button class="clear-btn" id="clearBtn">CLEAR</button>
+      </div>
+      <div class="transcript" id="transcript">
+        <div class="transcript-empty">Conversation will appear here...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

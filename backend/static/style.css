@@ -1,0 +1,347 @@
+/* ── Reset & base ───────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:        #0a0a0a;
+  --surface:   #111111;
+  --border:    #222222;
+  --text:      #f0ede8;
+  --muted:     #555550;
+  --accent:    #c8f060;
+  --accent2:   #60d4f0;
+  --danger:    #f06060;
+  --font-head: 'Syne', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+  --radius:    12px;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── Grid background ────────────────────────────────────────────── */
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.35;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── App layout ─────────────────────────────────────────────────── */
+.app {
+  position: relative;
+  z-index: 1;
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* ── Header ─────────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-family: var(--font-head);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+}
+
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--muted);
+  transition: background 0.3s;
+}
+
+.status-pill.ready .status-dot    { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+.status-pill.ready #statusText    { color: var(--accent); }
+.status-pill.listening .status-dot { background: var(--accent2); box-shadow: 0 0 6px var(--accent2); animation: pulse 1s infinite; }
+.status-pill.listening #statusText { color: var(--accent2); }
+.status-pill.thinking .status-dot  { background: #f0c060; box-shadow: 0 0 6px #f0c060; animation: pulse 0.6s infinite; }
+.status-pill.thinking #statusText  { color: #f0c060; }
+.status-pill.speaking .status-dot  { background: var(--accent); box-shadow: 0 0 10px var(--accent); animation: pulse 0.4s infinite; }
+.status-pill.speaking #statusText  { color: var(--accent); }
+.status-pill.error .status-dot     { background: var(--danger); }
+.status-pill.error #statusText     { color: var(--danger); }
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* ── Section label ──────────────────────────────────────────────── */
+.section-label {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  display: block;
+}
+
+/* ── Role grid ──────────────────────────────────────────────────── */
+.role-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.role-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  user-select: none;
+}
+
+.role-card:hover {
+  border-color: var(--muted);
+}
+
+.role-card.active {
+  border-color: var(--accent);
+  background: #1a1f10;
+}
+
+.role-card-name {
+  font-family: var(--font-head);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.role-card.active .role-card-name { color: var(--accent); }
+
+.role-card-desc {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* ── Orb visualiser ─────────────────────────────────────────────── */
+.viz-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.orb-wrap {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.orb {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.orb-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  transition: border-color 0.3s, transform 0.3s;
+}
+
+.r1 { width: 180px; height: 180px; }
+.r2 { width: 130px; height: 130px; }
+.r3 { width: 88px;  height: 88px; }
+
+.orb-core {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+/* States */
+.orb.listening .orb-ring { border-color: var(--accent2); }
+.orb.listening .r1 { animation: spin 8s linear infinite; }
+.orb.listening .r2 { animation: spin 5s linear infinite reverse; }
+.orb.listening .orb-core { background: #0d1e22; box-shadow: 0 0 20px var(--accent2); border-color: var(--accent2); }
+
+.orb.thinking .orb-ring { border-color: #f0c060; }
+.orb.thinking .r1 { animation: spin 3s linear infinite; }
+.orb.thinking .r2 { animation: spin 2s linear infinite reverse; }
+.orb.thinking .orb-core { background: #221e0d; box-shadow: 0 0 20px #f0c060; border-color: #f0c060; }
+
+.orb.speaking .orb-ring { border-color: var(--accent); }
+.orb.speaking .r1 { animation: spin 2s linear infinite; }
+.orb.speaking .r2 { animation: spin 1.2s linear infinite reverse; }
+.orb.speaking .r3 { animation: spin 0.8s linear infinite; }
+.orb.speaking .orb-core { background: #151f07; box-shadow: 0 0 28px var(--accent); border-color: var(--accent); }
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── Mic button ─────────────────────────────────────────────────── */
+.mic-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 40px;
+  padding: 14px 28px;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+
+.mic-btn:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.mic-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.mic-btn.recording {
+  border-color: var(--accent2);
+  color: var(--accent2);
+  animation: border-pulse 1.5s infinite;
+}
+
+.mic-btn.muted {
+  border-color: var(--danger);
+  color: var(--danger);
+}
+
+@keyframes border-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 transparent; }
+  50%       { box-shadow: 0 0 0 4px rgba(96, 212, 240, 0.15); }
+}
+
+/* ── Transcript ─────────────────────────────────────────────────── */
+.transcript-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.transcript-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.clear-btn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.clear-btn:hover { color: var(--danger); border-color: var(--danger); }
+
+.transcript {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  min-height: 200px;
+  max-height: 340px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.transcript-empty {
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+  margin: auto;
+}
+
+.msg {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  animation: fadeUp 0.2s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.msg-label {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.msg.user .msg-label  { color: var(--accent2); }
+.msg.bot  .msg-label  { color: var(--accent); }
+
+.msg-text {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.6;
+}
