@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A hands-free AI conversation with a transcript you can keep.">
+  <title>Voice AI Chat</title>
+  <link rel="stylesheet" href="/styles.css">
+  <script type="module" src="/js/main.js"></script>
+</head>
+<body>
+  <header class="masthead">
+    <div class="wrap header-inner">
+      <a class="brand" href="/" aria-label="Voice AI Chat home">
+        <span class="logo" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+        Voice AI Chat
+      </a>
+      <button id="open-settings" class="button outline" type="button">Settings</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="intro" aria-labelledby="title">
+      <p class="eyebrow">VOICE WORKSPACE</p>
+      <h1 id="title">Talk it through.</h1>
+      <p>Speak naturally, hear a reply, and keep the conversation going.</p>
+    </section>
+    <section class="workspace" aria-labelledby="conversation-title">
+      <header class="workspace-head">
+        <div><h2 id="conversation-title">Conversation</h2><p>Transcript saved in this browser</p></div>
+        <div class="voice-actions">
+          <span id="status" class="status" role="status" aria-atomic="true">Tap to start</span>
+          <button id="start" class="button primary" type="button">Start listening</button>
+        </div>
+      </header>
+      <div id="conversation" class="conversation" tabindex="0" aria-label="Conversation history">
+        <div id="empty" class="empty">
+          <span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+          <h3>Your conversation starts here</h3>
+          <p>Start listening or type a message below.</p>
+        </div>
+        <ol id="messages" aria-label="Transcript"></ol>
+      </div>
+      <div id="live-draft" class="draft" hidden>
+        <span>LIVE TRANSCRIPT</span><p id="draft-text"></p>
+      </div>
+      <p id="notice" class="notice" role="status" hidden></p>
+      <div id="retry-tools" class="retry-tools" hidden>
+        <button id="retry" class="button outline" type="button">Retry reply</button>
+        <button id="dismiss" class="button quiet" type="button">Continue without reply</button>
+      </div>
+      <form id="compose" class="compose">
+        <label for="message" class="sr-only">Type a message</label>
+        <textarea id="message" rows="2" maxlength="6000" placeholder="Type a message…"></textarea>
+        <button id="send" class="button secondary" type="submit">Send now</button>
+      </form>
+      <div class="session-controls">
+        <button id="mic" class="button outline" type="button" aria-pressed="false" disabled>Mute microphone</button>
+        <button id="tts" class="button outline" type="button" aria-pressed="true">Read replies aloud</button>
+        <button id="skip" class="button outline" type="button" hidden>Skip playback</button>
+        <p id="turn-hint" class="hint">Sends after 3 seconds of silence.</p>
+      </div>
+    </section>
+    <div class="history-tools">
+      <div class="exports">
+        <button id="markdown" class="button quiet" type="button">Export Markdown</button>
+        <button id="json" class="button quiet" type="button">Export JSON</button>
+      </div>
+      <button id="clear-history" class="button quiet danger" type="button">Clear history</button>
+    </div>
+    <details id="debug" class="debug">
+      <summary>Debug panel</summary>
+      <pre id="diagnostics"></pre>
+    </details>
+    <footer><span>WEB SPEECH FALLBACK</span><span id="support"></span></footer>
+  </main>
+
+  <dialog id="settings" aria-labelledby="settings-title">
+    <form id="settings-form">
+      <header class="dialog-head">
+        <div><p class="eyebrow">PREFERENCES</p><h2 id="settings-title">Settings</h2></div>
+        <button class="button quiet" id="close-settings" type="button">Close</button>
+      </header>
+      <label for="api-key">OpenAI API key</label>
+      <input id="api-key" type="password" autocomplete="off" spellcheck="false" maxlength="512"
+        placeholder="Enter an API key" aria-describedby="key-status key-note">
+      <p id="key-status" class="field-status" role="status">No key set</p>
+      <p id="key-note" class="hint">The key stays in this tab’s memory and is lost on refresh. The local app server receives it for each OpenAI request and can access it.</p>
+      <label for="model">OpenAI model</label>
+      <select id="model"></select>
+      <label for="silence">Silence before sending (seconds)</label>
+      <input id="silence" type="number" min="1" max="10" step="0.1" required>
+      <label class="check"><input type="checkbox" id="settings-tts"> Read replies aloud</label>
+      <p class="hint">Speech input uses your browser’s Web Speech service. The browser may interrupt recognition or ask for access again.</p>
+      <p id="settings-error" class="notice" role="status" hidden></p>
+      <div class="dialog-actions">
+        <button class="button primary" type="submit">Apply / Update</button>
+        <button class="button outline" id="clear-key" type="button">Clear key</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>

@@ -1,0 +1,92 @@
+* { box-sizing: border-box; }
+:root {
+  color-scheme: light;
+  --ink: #25213a;
+  --muted: #615b76;
+  --accent: #5233a4;
+  --line: #e4dff0;
+  --wash: #f7f4fc;
+  font: 16px/1.5 system-ui, sans-serif;
+  color: var(--ink);
+  background: #f9f7fd;
+}
+body { margin: 0; }
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: default; opacity: .52; }
+[hidden] { display: none !important; }
+:focus-visible { outline: 3px solid #8055df; outline-offset: 3px; }
+.wrap { max-width: 960px; width: calc(100% - 40px); margin-inline: auto; }
+.masthead { background: white; border-bottom: 1px solid var(--line); }
+.header-inner, .workspace-head, .dialog-head, .history-tools {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.header-inner { min-height: 68px; }
+.brand { color: var(--ink); text-decoration: none; font-weight: 760; display: flex; align-items: center; gap: 10px; }
+.logo, .wave { display: inline-flex; align-items: center; justify-content: center; gap: 3px; }
+.logo { width: 33px; height: 33px; border-radius: 10px; background: var(--accent); color: white; }
+.logo i, .wave i { display: block; width: 2px; height: 8px; border-radius: 5px; background: currentColor; }
+.logo i:nth-child(even), .wave i:nth-child(even) { height: 13px; }
+.logo i:nth-child(3), .wave i:nth-child(3) { height: 18px; }
+.intro { margin: 36px 0 24px; }
+.eyebrow { font-size: .7rem; font-weight: 800; letter-spacing: .15em; color: var(--accent); margin: 0 0 6px; }
+h1, h2, h3, p { margin: 0; }
+h1 { font-size: clamp(2.45rem, 7vw, 4rem); letter-spacing: -.065em; line-height: 1.05; }
+.intro > p:last-child { margin-top: 10px; color: var(--muted); }
+.workspace { background: white; border: 1px solid var(--line); border-radius: 20px; box-shadow: 0 14px 44px #3c256c0b; overflow: hidden; }
+.workspace-head { padding: 17px 21px; border-bottom: 1px solid var(--line); }
+.voice-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; }
+h2 { font-size: 1.15rem; }
+.workspace-head p, .hint, .field-status { color: var(--muted); font-size: .84rem; }
+.status { background: var(--wash); color: var(--accent); font-size: .82rem; font-weight: 750; border-radius: 99px; padding: 6px 11px; white-space: nowrap; }
+.status::before { content: ''; display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; background: currentColor; }
+.status[data-live="true"] { color: #12604c; background: #e7f8f1; }
+.conversation { height: clamp(230px, 39vh, 425px); padding: 18px 21px; overflow: auto; overscroll-behavior: contain; }
+.empty { min-height: 100%; display: grid; place-content: center; justify-items: center; text-align: center; gap: 6px; }
+.empty p { color: var(--muted); font-size: .9rem; }
+.wave { width: 54px; height: 54px; border-radius: 18px; color: var(--accent); background: #eee7ff; margin-bottom: 8px; }
+.wave i { width: 3px; }
+ol { list-style: none; padding: 0; margin: 0; }
+li { margin-bottom: 13px; display: grid; justify-items: start; }
+li[data-role="user"] { justify-items: end; }
+.meta { color: var(--muted); font-size: .76rem; margin: 0 6px 3px; }
+.bubble { background: var(--wash); border-radius: 12px; padding: 10px 13px; max-width: 88%; white-space: pre-wrap; overflow-wrap: anywhere; }
+li[data-role="user"] .bubble { background: #eee7ff; }
+.draft, .notice { margin: 0 21px 12px; border-radius: 10px; padding: 9px 13px; background: var(--wash); overflow-wrap: anywhere; }
+.draft span { color: var(--accent); font-size: .7rem; font-weight: 800; letter-spacing: .1em; }
+.notice { color: #713a18; background: #fff1e1; }
+.compose, .session-controls, .retry-tools { display: flex; flex-wrap: wrap; gap: 9px; align-items: center; padding: 0 21px 13px; }
+.compose textarea { flex: 1 1 180px; resize: vertical; max-height: 160px; }
+textarea, select, input:not([type="checkbox"]) { border: 1px solid #cec3e4; color: var(--ink); background: #fdfbff; border-radius: 9px; padding: 8px 10px; }
+.session-controls { padding-top: 12px; padding-bottom: 14px; background: #fbf9fe; border-top: 1px solid var(--line); }
+.session-controls .hint { margin-left: auto; }
+.button { border: 1px solid transparent; border-radius: 9px; padding: 8px 12px; min-height: 40px; font-size: .85rem; font-weight: 720; }
+.primary { background: var(--accent); color: white; }
+.primary:hover { background: #432786; }
+.secondary { background: #ede5fc; color: #41227f; }
+.outline { background: white; color: #443761; border-color: #ded5ec; }
+.outline[aria-pressed="true"] { background: #efe9fa; }
+.quiet { background: transparent; color: var(--accent); }
+.quiet:hover, .secondary:hover:not(:disabled), .outline:hover:not(:disabled) { background: #eae0fa; }
+.danger { color: #9b3151; }
+.history-tools { margin: 8px 0; flex-wrap: wrap; }
+.debug { background: white; border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; color: var(--muted); font-size: .83rem; }
+.debug summary { cursor: pointer; }
+pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+footer { display: flex; gap: 10px 14px; flex-wrap: wrap; padding: 14px 0 22px; color: var(--muted); font-size: .76rem; }
+footer span:first-child { color: var(--accent); font-weight: 800; letter-spacing: .09em; }
+dialog { width: min(460px, calc(100vw - 24px)); padding: 22px; border: 1px solid var(--line); border-radius: 16px; color: var(--ink); }
+dialog::backdrop { background: #1c132769; }
+dialog form { display: grid; gap: 8px; }
+dialog label { font-weight: 700; font-size: .87rem; margin-top: 5px; }
+dialog .notice { margin: 0; }
+.dialog-actions { display: flex; gap: 8px; margin-top: 4px; }
+.check { display: flex; align-items: center; gap: 8px; }
+.sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip-path: inset(50%); }
+@media (max-width: 520px) {
+  .wrap { width: calc(100% - 24px); }
+  .workspace-head, .conversation, .compose, .session-controls, .retry-tools { padding-inline: 12px; }
+  .draft, .notice { margin-inline: 12px; }
+  .session-controls .hint { width: 100%; margin-left: 0; }
+  .conversation { height: 285px; }
+}
