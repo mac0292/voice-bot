@@ -22,6 +22,7 @@ on('start', () => {
   else controller.start();
 });
 on('mic', () => controller.toggleMic());
+on('retry-mic', () => controller.retryRecognition());
 on('retry', () => controller.retry());
 on('dismiss', () => controller.dismiss());
 on('skip', () => controller.skipPlayback());
@@ -71,14 +72,42 @@ const model = byId('model');
 const silence = byId('silence');
 const settingsTts = byId('settings-tts');
 const error = byId('settings-error');
+const localSpeech = byId('local-speech');
+const localSpeechStatus = byId('local-speech-status');
+byId('local-speech-options').hidden = !stt.localSupported;
 for (const [value, label] of Object.entries(MODELS)) model.add(new Option(label, value));
 
 function showKeyStatus() {
   byId('key-status').textContent = settings.key ? 'Key set for this tab' : 'No key set';
 }
 
+function showSpeechMode() {
+  localSpeech.textContent = stt.local ? 'Use browser default' : 'Enable on-device speech (English US)';
+  localSpeechStatus.textContent = stt.local
+    ? 'On-device speech is enabled for new recognition sessions in this tab.'
+    : 'On-device speech can bypass the browser’s online speech service. Enabling it may download a language pack.';
+}
+
+on('local-speech', async () => {
+  localSpeech.disabled = true;
+  if (stt.local) {
+    stt.useBrowserDefault();
+    showSpeechMode();
+  } else {
+    localSpeechStatus.textContent = 'Preparing the English (US) speech pack…';
+    try {
+      await stt.enableLocal();
+      showSpeechMode();
+    } catch {
+      localSpeechStatus.textContent = 'The browser could not load the English (US) speech pack. Check your connection and try again.';
+    }
+  }
+  localSpeech.disabled = false;
+});
+
 on('open-settings', () => {
   showKeyStatus();
+  if (!localSpeech.disabled) showSpeechMode();
   model.value = settings.model;
   silence.value = settings.silenceMs / 1000;
   settingsTts.checked = settings.ttsEnabled;

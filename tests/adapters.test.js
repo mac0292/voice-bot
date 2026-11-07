@@ -40,6 +40,36 @@ test('Web Speech maps cumulative browser results and acquires no separate media 
   assert.equal(createWebSpeech({ isSecureContext: true }).supported, false);
 });
 
+test('on-device speech requires explicit successful installation and is reversible', async () => {
+  let native;
+  let installed = false;
+  class Recognition {
+    constructor() { native = this; }
+    set processLocally(value) { this.local = value; }
+    static async install(options) {
+      assert.deepEqual(options, { langs: ['en-US'], processLocally: true });
+      return installed;
+    }
+  }
+  const stt = createWebSpeech({
+    isSecureContext: true, SpeechRecognition: Recognition, navigator: { language: 'en-IN' },
+  });
+  assert.equal(stt.localSupported, true);
+  await assert.rejects(stt.enableLocal(), /speech pack/);
+  stt.open({});
+  assert.equal(native.lang, 'en-IN');
+  assert.equal(native.local, undefined);
+  installed = true;
+  await stt.enableLocal();
+  stt.open({});
+  assert.equal(native.lang, 'en-US');
+  assert.equal(native.local, true);
+  stt.useBrowserDefault();
+  stt.open({});
+  assert.equal(native.lang, 'en-IN');
+  assert.equal(native.local, undefined);
+});
+
 test('TTS terminal and cancel callbacks each settle once', () => {
   let utterance;
   let cancelled = 0;

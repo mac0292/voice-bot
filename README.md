@@ -31,7 +31,7 @@ The Node server binds to loopback. Set `PORT` to change the default port. Voice 
 
 Run `npm test`. The suite uses a fake clock, mocked browser speech events, and a mocked OpenAI upstream over the local HTTP route. See [manual browser checks and troubleshooting](docs/browser-checks.md) for microphone and speech playback verification.
 
-This version uses the [Web Speech API](https://webaudio.github.io/web-speech-api/) fallback. Its browser-managed capture can disconnect or prompt again. See [architecture](docs/architecture.md) for the session lifecycle and the requirements for a streaming adapter.
+This version uses the [Web Speech API](https://webaudio.github.io/web-speech-api/) fallback. The app restarts recognition after idle timeouts. If the browser's online speech service cannot connect, **Settings → Enable on-device speech (English US)** is available in browsers that support language packs. See [architecture](docs/architecture.md) for the session lifecycle and the requirements for a streaming adapter.
 
 ## Maintaining the documentation
 

@@ -183,11 +183,50 @@ test('transient network errors back off with a bounded number of attempts', () =
     clock.tick(1);
     assert.equal(sessions.length, count + 1);
   }
+  sessions.at(-1).error('network');
   sessions.at(-1).end();
   clock.tick(30000);
   assert.equal(sessions.length, 6);
   assert.equal(c.status, 'Error');
   assert.equal(c.handsFreeEnabled, true);
+  assert.match(c.recognitionNotice, /speech service could not connect/);
+  c.retryRecognition();
+  assert.equal(sessions.length, 7);
+  assert.equal(c.status, 'Listening');
+  assert.equal(c.recognitionNotice, '');
+});
+
+test('idle no-speech timeouts do not exhaust retries and speech still sends', () => {
+  const { controller: c, clock, sessions, calls } = harness();
+  c.start();
+  for (let i = 0; i < 8; i++) {
+    const session = sessions.at(-1);
+    session.error('no-speech');
+    clock.tick(1000);
+    assert.equal(sessions.length, i + 1);
+    session.end();
+    clock.tick(999);
+    assert.equal(sessions.length, i + 1);
+    clock.tick(1);
+    assert.equal(sessions.length, i + 2);
+    assert.equal(c.status, 'Listening');
+    assert.equal(c.retryCount, 0);
+  }
+  assert.equal(calls.length, 0);
+  sessions.at(-1).result('after a long pause');
+  clock.tick(3000);
+  assert.equal(calls[0].messages.at(-1).content, 'after a long pause');
+});
+
+test('Stop cancels an idle recognizer restart', () => {
+  const { controller: c, clock, sessions } = harness();
+  c.start();
+  sessions[0].error('no-speech');
+  sessions[0].end();
+  c.stop();
+  clock.tick(10000);
+  assert.equal(sessions.length, 1);
+  assert.equal(c.status, 'Tap to start');
 });
 
 for (const code of ['not-allowed', 'audio-capture', 'service-not-allowed']) {

@@ -7,6 +7,7 @@ const fatalErrors = {
   'language-not-supported': 'The speech service does not support your browser language. You can still type.',
 };
 const maxRetries = 5;
+const idleRestartDelay = 1000;
 
 export class SessionController {
   constructor({ stt, tts, api, journal, settings, render = () => {}, clock = globalThis,
@@ -24,6 +25,7 @@ export class SessionController {
     this.speaking = false;
     this.trace = [];
     this.notice = '';
+    this.recognitionNotice = '';
     this.changed();
   }
 
@@ -50,6 +52,11 @@ export class SessionController {
   }
 
   get busy() { return ['thinking', 'speaking'].includes(this.assistantState); }
+
+  get canRetryRecognition() {
+    return this.handsFreeEnabled && this.sttState === 'error' && !this.session &&
+      !this.busy && !this.pending;
+  }
 
   changed(event) {
     if (event) {
@@ -84,6 +91,7 @@ export class SessionController {
     this.retryCount = 0;
     this.captureState = 'idle';
     this.notice = '';
+    this.recognitionNotice = '';
     this.sttState = this.session ? 'stopping' : 'idle';
     if (this.session?.waiters === null) {
       this.sttState = 'error';
@@ -101,6 +109,7 @@ export class SessionController {
     this.assistantState = 'idle';
     this.retryCount = 0;
     this.notice = '';
+    this.recognitionNotice = '';
     this.clearDraft();
     this.clearRetry();
     const request = this.request;
@@ -132,6 +141,17 @@ export class SessionController {
     if (!this.settings.ttsEnabled) this.skipPlayback();
     this.armSilence();
     this.changed();
+  }
+
+  retryRecognition() {
+    if (!this.canRetryRecognition) return;
+    this.retryCount = 0;
+    this.recognitionNotice = '';
+    this.micMuted = false;
+    this.sttState = 'idle';
+    this.reconcile();
+    this.armSilence();
+    this.changed('Microphone retry requested');
   }
 
   get wantsRecognition() {
@@ -189,7 +209,12 @@ export class SessionController {
           session.error = code;
           this.lastSttError = code;
           this.changed('Recognition error: ' + code);
-          if (Object.hasOwn(fatalErrors, code)) this.failMicrophone(fatalErrors[code]);
+          if (Object.hasOwn(fatalErrors, code)) {
+            const message = code === 'language-not-supported' && this.stt.local
+              ? 'The on-device English (US) speech pack is unavailable. Switch to the browser default in Settings.'
+              : fatalErrors[code];
+            this.failMicrophone(message);
+          }
         },
         end: () => this.recognitionEnded(session),
       });
@@ -223,7 +248,7 @@ export class SessionController {
       this.preserveSegment();
       if (wasSpeaking) this.lastActivityAt = this.now();
       if (wasSpeaking || this.silenceDeadline === undefined) this.armSilence();
-      if (this.wantsRecognition) this.scheduleRetry();
+      if (this.wantsRecognition) this.scheduleRetry(session.error);
     } else {
       this.reconcile();
     }
@@ -231,18 +256,22 @@ export class SessionController {
     for (const resolve of session.waiters ?? []) resolve(true);
   }
 
-  scheduleRetry() {
-    if (this.retryCount >= maxRetries) {
+  scheduleRetry(error) {
+    const idle = error === 'no-speech';
+    if (idle) this.retryCount = 0;
+    if (!idle && this.retryCount >= maxRetries) {
       this.cancelSilence();
       this.sttState = 'error';
       this.captureState = 'interrupted';
-      this.notice = 'Speech recognition kept disconnecting. Stop, then start again, or type a message.';
+      this.recognitionNotice = error === 'network' && !this.stt.local
+        ? 'The browser’s speech service could not connect. Try on-device speech in Settings if available, or open the app in desktop Chrome.'
+        : 'The browser stopped speech recognition repeatedly. Check microphone access or try desktop Chrome.';
       return;
     }
     this.captureState = 'interrupted';
     this.sttState = 'reconnecting';
     const generation = this.sessionGeneration;
-    const delay = Math.min(4000, 250 * 2 ** this.retryCount++);
+    const delay = idle ? idleRestartDelay : Math.min(4000, 250 * 2 ** this.retryCount++);
     this.retryTimer = this.clock.setTimeout(() => {
       this.retryTimer = undefined;
       if (generation === this.sessionGeneration) this.reconcile();

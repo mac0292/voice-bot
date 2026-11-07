@@ -61,6 +61,7 @@ export function createUi({ journal, settings, stt, tts }) {
     playback.setAttribute('aria-pressed', String(settings.ttsEnabled && tts.supported));
     byId('skip').hidden = controller.assistantState !== 'speaking';
     byId('retry-tools').hidden = !controller.pending || controller.busy;
+    byId('mic-retry-tools').hidden = !controller.canRetryRecognition;
     typed.disabled = controller.busy || Boolean(controller.pending);
     send.disabled = typed.disabled || !(typed.value.trim() || controller.draft.trim());
     byId('live-draft').hidden = !controller.draft;
@@ -68,7 +69,7 @@ export function createUi({ journal, settings, stt, tts }) {
     byId('turn-hint').textContent = controller.busy ? 'Voice input is paused during the reply.' :
       controller.pending ? 'Retry the last turn or continue without a reply.' :
       'Sends after ' + settings.silenceMs / 1000 + ' seconds of silence.';
-    const message = [controller.notice, journal.warning].filter(Boolean).join(' ');
+    const message = [controller.notice, controller.recognitionNotice, journal.warning].filter(Boolean).join(' ');
     if (notice.textContent !== message) notice.textContent = message;
     notice.hidden = !message;
     byId('clear-history').disabled = !renderedCount || controller.busy;

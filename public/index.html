@@ -45,6 +45,9 @@
         <span>LIVE TRANSCRIPT</span><p id="draft-text"></p>
       </div>
       <p id="notice" class="notice" role="status" hidden></p>
+      <div id="mic-retry-tools" class="retry-tools" hidden>
+        <button id="retry-mic" class="button outline" type="button">Retry microphone</button>
+      </div>
       <div id="retry-tools" class="retry-tools" hidden>
         <button id="retry" class="button outline" type="button">Retry reply</button>
         <button id="dismiss" class="button quiet" type="button">Continue without reply</button>
@@ -92,6 +95,10 @@
       <input id="silence" type="number" min="1" max="10" step="0.1" required>
       <label class="check"><input type="checkbox" id="settings-tts"> Read replies aloud</label>
       <p class="hint">Speech input uses your browser’s Web Speech service. The browser may interrupt recognition or ask for access again.</p>
+      <div id="local-speech-options" hidden>
+        <p id="local-speech-status" class="hint" role="status"></p>
+        <button id="local-speech" class="button outline" type="button"></button>
+      </div>
       <p id="settings-error" class="notice" role="status" hidden></p>
       <div class="dialog-actions">
         <button class="button primary" type="submit">Apply / Update</button>
